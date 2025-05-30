@@ -2,13 +2,14 @@ package org.ejercicio.models;
 import jakarta.persistence.*;
 import org.ejercicio.Enums.contract_status;
 import org.ejercicio.Enums.poerty_types;
-
+import java.time.temporal.ChronoUnit;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "rental_contract")
 public class rental_contract {
+    public BigDecimal getTotalRent;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contract_id")
@@ -86,7 +87,7 @@ public class rental_contract {
         this.status = status;
     }
 
-    private int getTotalRent() {
-        return
+    public BigDecimal getTotalRent() {
+        return new BigDecimal(ChronoUnit.MONTHS.between(startDate, endDate) * monthlyRent.intValue());
     }
 }
