@@ -2,7 +2,9 @@ package org.ejercicio;
 
 import org.ejercicio.Enums.property_types;
 import org.ejercicio.dto.CrearPago;
-import org.ejercicio.dto.Filtro;
+import org.ejercicio.dto.FiltroFecha;
+import org.ejercicio.dto.FiltroNombre;
+import org.ejercicio.dto.ResultadoFecha;
 import org.ejercicio.models.rental_contract;
 import org.ejercicio.service.Logica;
 
@@ -15,7 +17,8 @@ public class Main {
     private static final Logica logica = Logica.getInstance();
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        System.out.println("Ingrese el ID del contrato:");
+
+        /*System.out.println("Ingrese el ID del contrato:");
         long contractId = scanner.nextLong();
         System.out.println("Ingrese el monto del pago:");
         BigDecimal amount = scanner.nextBigDecimal();
@@ -31,17 +34,17 @@ public class Main {
         } else {
             System.out.println("Error al crear el pago. Verifique el ID del contrato.");
         }
-        Filtro filtro = new Filtro();
+        FiltroNombre filtroNombre = new FiltroNombre();
 
         System.out.println("Ingrese el nombre del inquilino:");
         String tenantName = scanner.nextLine();
-        filtro.setName(tenantName);
+        filtroNombre.setName(tenantName);
 
         System.out.println("Ingrese el tipo de propiedad (e.g., HOUSE, APARTMENT):");
         String propertyTypeInput = scanner.nextLine();
         if(!propertyTypeInput.isEmpty()) {
             property_types propertyType = property_types.valueOf(propertyTypeInput.toUpperCase());
-            filtro.setPropertyType(propertyType);
+            filtroNombre.setPropertyType(propertyType);
         }
 
         System.out.println("Ingrese el monto mínimo del alquiler mensual:");
@@ -49,7 +52,7 @@ public class Main {
 
         if (!minMonthlyRentInput.isEmpty()) {
             BigDecimal minMonthlyRent = new BigDecimal(minMonthlyRentInput);
-            filtro.setMinAmount(minMonthlyRent);
+            filtroNombre.setMinAmount(minMonthlyRent);
         }
 
 
@@ -58,22 +61,22 @@ public class Main {
 
         if (!maxMonthlyRentInput.isEmpty()) {
             BigDecimal maxMonthlyRent = new BigDecimal(maxMonthlyRentInput);
-            filtro.setMinAmount(maxMonthlyRent);
+            filtroNombre.setMinAmount(maxMonthlyRent);
         }
 
         System.out.println("Ingrese la fecha de inicio (YYYY-MM-DD):");
         String startDateInput = scanner.nextLine();
         if(!startDateInput.isEmpty()) {
-            filtro.setMinDate(org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(startDateInput));
+            filtroNombre.setMinDate(org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(startDateInput));
         }
 
         System.out.println("Ingrese la fecha de fin (YYYY-MM-DD):");
         String endDateInput = scanner.nextLine();
         if(!endDateInput.isEmpty()) {
-            filtro.setMaxDate(org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(endDateInput));
+            filtroNombre.setMaxDate(org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(endDateInput));
         }
 
-        List<rental_contract> contracts = logica.getContracts(filtro);
+        List<rental_contract> contracts = logica.getContractsName(filtroNombre);
         for (rental_contract contract : contracts) {
             System.out.println("Contrato ID: " + contract.getId());
             System.out.println("Inquilino: " + contract.getTenantName());
@@ -84,5 +87,22 @@ public class Main {
             System.out.println("Estado: " + contract.getStatus());
             System.out.println("-----------------------------");
         }
+        */
+
+        System.out.println("Ingrese la fecha desde la que deseas filtrar (YYYY-MM-DD): ");
+        String minDate = scanner.nextLine();
+        System.out.println("Ingrese la fecha hasta la que deseas filtrar (YYYY-MM-DD): ");
+        String maxDate = scanner.nextLine();
+
+        FiltroFecha filtroFecha = new FiltroFecha(org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(minDate), org.ejercicio.utils.LocalDateTimeUtils.crearLocalDateTimeDesdeFecha(maxDate));
+        List<ResultadoFecha> resultadosFechas = logica.getContrtactsStartDate(filtroFecha);
+
+        for (ResultadoFecha resultado : resultadosFechas){
+            System.out.println("Tipo de propiedad: " + resultado.getPropertyType());
+            System.out.println("Alquiler total: " + resultado.getTotalRent());
+            System.out.println("-----------------------------");
+        }
+
+
     }
 }

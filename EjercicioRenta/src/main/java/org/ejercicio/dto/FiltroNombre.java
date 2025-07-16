@@ -6,7 +6,7 @@ import org.ejercicio.Enums.property_types;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class Filtro {
+public class FiltroNombre {
     private String name;
     private property_types propertyType;
     private LocalDateTime minDate;
@@ -14,7 +14,7 @@ public class Filtro {
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
 
-    public Filtro(String name, property_types propertyType, LocalDateTime mintDate, LocalDateTime maxtDate, BigDecimal minAmount, BigDecimal maxAmount) {
+    public FiltroNombre(String name, property_types propertyType, LocalDateTime mintDate, LocalDateTime maxtDate, BigDecimal minAmount, BigDecimal maxAmount) {
         this.name = name;
         this.propertyType = propertyType;
         this.minDate = mintDate;
@@ -22,7 +22,7 @@ public class Filtro {
         this.minAmount = minAmount;
         this.maxAmount = maxAmount;
     }
-    public Filtro(){};
+    public FiltroNombre(){};
     public String getNname() {
         return name;
     }

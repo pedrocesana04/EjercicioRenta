@@ -1,8 +1,8 @@
 package org.ejercicio.service;
 
 import jakarta.persistence.criteria.*;
-import org.ejercicio.dto.CrearPago;
-import org.ejercicio.dto.Filtro;
+import org.ejercicio.Enums.contract_status;
+import org.ejercicio.dto.*;
 import org.ejercicio.models.rent_payment;
 import org.ejercicio.models.rental_contract;
 import org.ejercicio.utils.HibernateUtil;
@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Logica {
     private static Logica instance;
@@ -79,7 +80,7 @@ public class Logica {
         return true;
     }
 
-    public List<rental_contract> getContracts(Filtro filtro){
+    public List<rental_contract> getContractsName(FiltroNombre filtro){
         List<rental_contract> results = new ArrayList<>();
         try (Session session = HibernateUtil.getSession()) {
             CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -113,6 +114,51 @@ public class Logica {
             query.orderBy(cb.desc(root.get("startDate")));
             results = session.createQuery(query).getResultList();
         }
+        return results;
+    }
+
+    public List<ResultadoFecha> getContrtactsStartDate (FiltroFecha filtroFecha){
+        List<ResultadoFecha> results = new ArrayList<>();
+        try (Session session = HibernateUtil.getSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<rental_contract> query = cb.createQuery(rental_contract.class);
+            Root<rental_contract> root = query.from(rental_contract.class);
+            query.select(root)
+                    .where(cb.and(
+                            cb.between(root.get("startDate"), filtroFecha.getMinDate(), filtroFecha.getMaxDate()),
+                            cb.equal(root.get("status"), contract_status.COMPLETED)));
+            List<rental_contract> contracts = session.createQuery(query).getResultList();
+            results = contracts.stream()
+                    .map(contract -> new ResultadoFecha(
+                            contract.getPropertyType(),
+                            contract.getTotalRent()
+                    ))
+                    .collect(Collectors.toList());;
+
+        }
+        return results;
+    }
+
+    public List<ResultadoNoCompletados> getContractsNotCompleted (){
+        List<ResultadoNoCompletados> results = new ArrayList<>();
+        List<rental_contract> contracts = new ArrayList<>();
+        try (Session session = HibernateUtil.getSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<rental_contract> query = cb.createQuery(rental_contract.class);
+            Root<rental_contract> contract = query.from(rental_contract.class);
+            query.select(contract)
+                    .where(cb.notEqual(contract.get("status"), contract_status.COMPLETED));
+            contracts = session.createQuery(query).getResultList();
+        }
+
+        try (Session session = HibernateUtil.getSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<rental_contract> query = cb.createQuery(rental_contract.class);
+            Root<rental_contract> contract = query.from(contracts);
+        }
+
+
+
         return results;
     }
 }
